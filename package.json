@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "postinstall": "pip3 install kerykeion timezonefinder --quiet 2>/dev/null || pip install kerykeion timezonefinder --quiet"
   },
   "engines": {
     "node": ">=18.0.0"

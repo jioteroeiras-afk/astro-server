@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const { spawn } = require('child_process');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -82,6 +84,31 @@ app.post('/chart', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// POST /natal — carta natal con Kerykeion (Python subprocess)
+app.post('/natal', (req, res) => {
+  const python = spawn('python3', [path.join(__dirname, 'natal.py')]);
+  let stdout = '';
+  let stderr = '';
+
+  python.stdin.write(JSON.stringify(req.body));
+  python.stdin.end();
+
+  python.stdout.on('data', (d) => { stdout += d.toString(); });
+  python.stderr.on('data', (d) => { stderr += d.toString(); });
+
+  python.on('close', (code) => {
+    if (code !== 0) {
+      console.error('natal.py error:', stderr);
+      return res.status(500).json({ error: stderr || 'Error calculando carta natal' });
+    }
+    try {
+      res.json(JSON.parse(stdout));
+    } catch (e) {
+      res.status(500).json({ error: 'Respuesta inválida del cálculo' });
+    }
+  });
 });
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
