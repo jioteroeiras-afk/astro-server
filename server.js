@@ -10,6 +10,7 @@ const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 const rapidApiHeaders = {
   'Content-Type': 'application/json',
