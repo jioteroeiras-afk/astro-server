@@ -78,7 +78,7 @@ function spread(items,gap){if(items.length<=1)return items.map(function(i){retur
 function makeSVG(planets){
   var cx=180,cy=180,RI=58,RP1=62,RP2=112,RPM=87,RS1=115,RS2=173,RSM=144;
   var p=[];
-  p.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="360" height="360">');
+  p.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="100%" style="max-width:500px;display:block">');
   p.push('<circle cx="180" cy="180" r="176" fill="#19092a"/>');
   SD.forEach(function(sg,i){p.push('<path d="'+arc(cx,cy,RS1,RS2,i*30+180,(i+1)*30+180)+'" fill="'+EC[sg.e]+'" stroke="#4f3851" stroke-width="1.2"/>');});
   SD.forEach(function(sg,i){var mid=i*30+15+180;var pt=xy(cx,cy,RSM,mid);p.push('<text x="'+f(pt.x)+'" y="'+f(pt.y)+'" text-anchor="middle" dominant-baseline="central" font-size="16" font-family="Helvetica,Arial,sans-serif" fill="'+ET[sg.e]+'">'+sg.s+'</text>');});
@@ -127,7 +127,7 @@ fetch(API)
     var subj=data.subject;
     var planets=PL.map(function(p){var pd=subj[p.k];return{k:p.k,n:p.n,s:p.s,sign:pd.sign,position:pd.position,abs_pos:pd.abs_pos,retrograde:pd.retrograde};});
     var tableCol='<div style="flex:1;min-width:260px;display:flex;flex-direction:column">'+makeTable(planets)+'<div style="padding-top:14px;margin-top:4px;border-top:1px solid rgba(0,0,0,0.08);text-align:right"><a href="https://astrologiasi.com/widget" style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#7a4888;text-decoration:none;letter-spacing:0.3px">Ver carta del cielo &rarr;</a></div></div>';
-    document.getElementById('aw-body').innerHTML='<div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;justify-content:center"><div style="flex:0 0 auto">'+makeSVG(planets)+'</div>'+tableCol+'</div>';
+    document.getElementById('aw-body').innerHTML='<div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;justify-content:center"><div style="flex:0 1 500px;min-width:200px">'+makeSVG(planets)+'</div>'+tableCol+'</div>';
     document.getElementById('aw-ts').textContent=fmtTS(subj.iso_formatted_utc_datetime);
   })
   .catch(function(e){document.getElementById('aw-body').innerHTML='<div style="color:#cc3333;font-size:13px;text-align:center;padding:50px 20px;font-family:Helvetica,Arial,sans-serif">No se pudo conectar con el servidor.<br><span style="color:#9a7898;font-size:11px">'+e.message+'</span></div>';});
