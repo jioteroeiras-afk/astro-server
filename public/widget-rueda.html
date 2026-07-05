@@ -22,6 +22,10 @@
 <style>
 @keyframes aw-rot{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 #aw-spin{animation:aw-rot 3s linear infinite;transform-origin:center}
+#aw-row{display:flex;gap:24px;align-items:flex-start;justify-content:center;flex-wrap:nowrap}
+#aw-wheel{flex:0 0 auto;width:360px}
+#aw-wheel svg{width:100%;max-width:500px;display:block}
+@media(max-width:700px){#aw-row{flex-wrap:wrap}#aw-wheel{width:100%;max-width:500px}}
 </style>
 
 <script>
@@ -127,7 +131,7 @@ fetch(API)
     var subj=data.subject;
     var planets=PL.map(function(p){var pd=subj[p.k];return{k:p.k,n:p.n,s:p.s,sign:pd.sign,position:pd.position,abs_pos:pd.abs_pos,retrograde:pd.retrograde};});
     var tableCol='<div style="flex:1;min-width:260px;display:flex;flex-direction:column">'+makeTable(planets)+'<div style="padding-top:14px;margin-top:4px;border-top:1px solid rgba(0,0,0,0.08);text-align:right"><a href="https://astrologiasi.com/widget" style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#7a4888;text-decoration:none;letter-spacing:0.3px">Ver carta del cielo &rarr;</a></div></div>';
-    document.getElementById('aw-body').innerHTML='<div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;justify-content:center"><div style="flex:0 1 500px;min-width:200px">'+makeSVG(planets)+'</div>'+tableCol+'</div>';
+    document.getElementById('aw-body').innerHTML='<div id="aw-row"><div id="aw-wheel">'+makeSVG(planets)+'</div>'+tableCol+'</div>';
     document.getElementById('aw-ts').textContent=fmtTS(subj.iso_formatted_utc_datetime);
   })
   .catch(function(e){document.getElementById('aw-body').innerHTML='<div style="color:#cc3333;font-size:13px;text-align:center;padding:50px 20px;font-family:Helvetica,Arial,sans-serif">No se pudo conectar con el servidor.<br><span style="color:#9a7898;font-size:11px">'+e.message+'</span></div>';});
