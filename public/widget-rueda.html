@@ -23,9 +23,9 @@
 @keyframes aw-rot{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 #aw-spin{animation:aw-rot 3s linear infinite;transform-origin:center}
 #aw-row{display:flex;gap:24px;align-items:flex-start;justify-content:center;flex-wrap:nowrap}
-#aw-wheel{flex:0 0 auto;width:360px}
-#aw-wheel svg{width:100%;max-width:500px;display:block}
-@media(max-width:700px){#aw-row{flex-wrap:wrap}#aw-wheel{width:100%;max-width:500px}}
+#aw-wheel{flex:0 0 auto;width:500px}
+#aw-wheel svg{display:block}
+@media(max-width:700px){#aw-row{flex-wrap:wrap}#aw-wheel{width:100%}#aw-wheel svg{width:100%;height:auto}}
 </style>
 
 <script>
@@ -82,7 +82,7 @@ function spread(items,gap){if(items.length<=1)return items.map(function(i){retur
 function makeSVG(planets){
   var cx=180,cy=180,RI=58,RP1=62,RP2=112,RPM=87,RS1=115,RS2=173,RSM=144;
   var p=[];
-  p.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="100%" style="max-width:500px;display:block">');
+  p.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="500" height="500">');
   p.push('<circle cx="180" cy="180" r="176" fill="#19092a"/>');
   SD.forEach(function(sg,i){p.push('<path d="'+arc(cx,cy,RS1,RS2,i*30+180,(i+1)*30+180)+'" fill="'+EC[sg.e]+'" stroke="#4f3851" stroke-width="1.2"/>');});
   SD.forEach(function(sg,i){var mid=i*30+15+180;var pt=xy(cx,cy,RSM,mid);p.push('<text x="'+f(pt.x)+'" y="'+f(pt.y)+'" text-anchor="middle" dominant-baseline="central" font-size="16" font-family="Helvetica,Arial,sans-serif" fill="'+ET[sg.e]+'">'+sg.s+'</text>');});
