@@ -140,8 +140,11 @@ def natal(body: NatalBody):
         h = getattr(s, attr)
         houses.append({"house": i, "sign": h.sign, "position": h.position, "abs_pos": h.abs_pos})
 
+    chiron = getattr(s, "chiron", None)
     planets_list = [s.sun, s.moon, s.mercury, s.venus, s.mars,
                     s.jupiter, s.saturn, s.uranus, s.neptune, s.pluto]
+    if chiron is not None:
+        planets_list.append(chiron)
 
     aspects = []
     if hasattr(s, "aspects_list"):
