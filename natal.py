@@ -45,7 +45,7 @@ def main():
         houses.append({"house": i, "sign": h.sign, "position": h.position, "abs_pos": h.abs_pos})
 
     planets = [s.sun, s.moon, s.mercury, s.venus, s.mars,
-               s.jupiter, s.saturn, s.uranus, s.neptune, s.pluto]
+               s.jupiter, s.saturn, s.uranus, s.neptune, s.pluto, s.chiron]
 
     aspects = []
     if hasattr(s, "aspects_list"):
