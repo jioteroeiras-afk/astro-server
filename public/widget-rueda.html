@@ -112,13 +112,13 @@ function makeSVG(planets,houses,ascAbsPos,isoDatetime){
   p.push('<circle cx="280" cy="280" r="'+RO+'" fill="#4f3851"/>');
 
   // Sage house ring
-  p.push('<circle cx="280" cy="280" r="'+RS+'" fill="#c8d4bc"/>');
+  p.push('<circle cx="280" cy="280" r="'+RS+'" fill="#ecf2e7"/>');
 
   // Alternating house shading
   for(var i=0;i<12;i++){
     if(i%2===1){
       var a1=sa(houses[i].abs_pos),a2=sa(houses[(i+1)%12].abs_pos);
-      p.push('<path d="'+arcCCW(RH,RS,a1,a2)+'" fill="#b8c6aa" opacity="0.65"/>');
+      p.push('<path d="'+arcCCW(RH,RS,a1,a2)+'" fill="#ddebd6" opacity="0.7"/>');
     }
   }
 
@@ -203,17 +203,13 @@ function makeSVG(planets,houses,ascAbsPos,isoDatetime){
     // Retrograde dot at tick
     if(pl.retrograde){var rd=xyc(RS-11,ta);p.push('<circle cx="'+f(rd.x)+'" cy="'+f(rd.y)+'" r="2" fill="#cc2222"/>');}
 
-    // Leader line if displaced
-    if(diff>3){var l1=xyc(RS-8,ta),l2=xyc(RPL+14,da);p.push('<line x1="'+f(l1.x)+'" y1="'+f(l1.y)+'" x2="'+f(l2.x)+'" y2="'+f(l2.y)+'" stroke="#4f3851" stroke-width="0.5" opacity="0.3"/>');}
-
     // Element color
     var sg2=SM[pl.sign];
     if(!sg2){for(var kk in SM){if(SM[kk].n.toLowerCase()===pl.sign.toLowerCase()){sg2=SM[kk];break;}}}
     var ec2=sg2?EC[sg2.e]:'#4f3851';
 
-    // Planet icon
+    // Planet icon (no background circle, no leader line)
     var sp2=xyc(RPL,da);
-    p.push('<circle cx="'+f(sp2.x)+'" cy="'+f(sp2.y)+'" r="13" fill="white" opacity="0.85"/>');
     p.push('<g transform="translate('+f(sp2.x)+','+f(sp2.y)+') scale(0.22) translate(-50,-50)" fill="'+ec2+'">'+PP[pl.k]+'</g>');
 
     // Degree label (near sign ring inner edge)
