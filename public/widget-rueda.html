@@ -23,7 +23,7 @@
 @keyframes aw-rot{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 #aw-spin{animation:aw-rot 3s linear infinite;transform-origin:center}
 #aw-row{display:flex;gap:24px;align-items:flex-start;justify-content:center;flex-wrap:nowrap}
-#aw-wheel{flex:0 0 auto;width:500px}
+#aw-wheel{flex:0 0 auto;width:550px}
 #aw-wheel svg{display:block}
 @media(max-width:700px){#aw-row{flex-wrap:wrap}#aw-wheel{width:100%}#aw-wheel svg{width:100%;height:auto}}
 </style>
@@ -59,7 +59,7 @@ var SD=[
   {a:'Pis',n:'Piscis',     s:'♓︎',e:'Water'},
 ];
 var SM={};SD.forEach(function(sg){SM[sg.a]=sg;});
-var EC={Fire:'#953e4e',Earth:'#baccb2',Air:'#efe698',Water:'#4d91af'};
+var EC={Fire:'#953e4e',Earth:'#baccb2',Air:'#1a1a1a',Water:'#4d91af'};
 var ET={Fire:'#fce8ea',Earth:'#1a2010',Air:'#18180a',Water:'#e4f2f8'};
 var PP={
   sun:'<path d="M17.18,34.88c0-.21.29-.8.88-1.77.59-.97,1.49-2.2,2.71-3.7,1.21-1.49,2.62-3.02,4.22-4.58,1.6-1.56,3.59-3.1,5.98-4.63,2.39-1.53,4.84-2.74,7.34-3.64,2.98-.97,7.04-1.35,12.18-1.14,6.31.35,11.55,1.79,15.72,4.32,4.16,2.53,8.12,6.78,11.87,12.75,2.64,4.16,4.27,9.54,4.89,16.13.62,6.59,0,11.83-1.87,15.72-2.71,5.55-5.5,9.72-8.38,12.49-2.88,2.78-7.2,5.45-12.96,8.01-2.22.97-5.9,1.49-11.03,1.56-5.14.07-8.71-.35-10.72-1.25-2.01-.9-3.99-1.73-5.93-2.5-1.74-.69-4.16-2.5-7.29-5.41-3.12-2.91-5.17-5.27-6.14-7.08-2.15-4.23-3.43-7.27-3.85-9.11-.42-1.84-.62-5.15-.62-9.94,0-6.38.5-10.56,1.51-12.54,1.01-1.98,1.51-3.21,1.51-3.7ZM56.21,22.29c-2.43-1.32-6.39-1.54-11.87-.68-5.48.87-9.37,2.34-11.66,4.42-2.15,1.87-4.25,3.89-6.3,6.04-2.05,2.15-3.07,3.4-3.07,3.75,0,.49-.59,2.01-1.77,4.58-1.25,2.71-1.86,6.25-1.82,10.62.03,4.37.71,8.19,2.03,11.45,1.25,3.12,3.36,6.23,6.35,9.32,2.98,3.09,6.04,5.4,9.16,6.92,3.33,1.6,7.04,2.41,11.14,2.45,4.09.04,7.81-.74,11.14-2.34,2.91-1.32,5.86-3.49,8.85-6.51,2.98-3.02,5.17-6.02,6.56-9,1.46-3.26,2.2-7.03,2.24-11.29.03-4.27-.64-8.27-2.03-12.02-1.18-2.98-3.37-6.26-6.56-9.84-3.19-3.57-5.79-5.6-7.81-6.09-1.53-.35-3.05-.94-4.58-1.77ZM45.59,42.59c3.19-.48,5.29-.54,6.3-.16,1,.38,2.31,1.68,3.9,3.9,2.84,3.82,2.74,7.29-.31,10.41-2.22,2.22-4.56,3.35-7.03,3.38-2.46.04-4.81-1.09-7.03-3.38-1.04-1.04-1.68-1.91-1.93-2.6-.24-.69-.26-1.77-.05-3.23.42-2.22,1.2-4.11,2.34-5.67,1.14-1.56,2.41-2.45,3.8-2.65Z"/>',
@@ -82,7 +82,7 @@ function spread(items,gap){if(items.length<=1)return items.map(function(i){retur
 function makeSVG(planets,houses,ascAbsPos,isoDatetime){
   var cx=280,cy=280;
   var RO=240,RS=196,RH=108;
-  var RSM=218,RPL=166,RDG=190,RHN=148,RASP=107,RLBL=252;
+  var RSM=218,RPL=166,RDG=190,RHN=122,RASP=107,RLBL=252;
 
   function sa(p){return((540-p+ascAbsPos)%360+360)%360;}
   function xyc(r,a){var rad=a*Math.PI/180;return{x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)};}
@@ -103,7 +103,7 @@ function makeSVG(planets,houses,ascAbsPos,isoDatetime){
   ];
 
   var p=[];
-  p.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 560" width="500" height="500">');
+  p.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 560" width="550" height="550">');
 
   // Background
   p.push('<circle cx="280" cy="280" r="250" fill="#fce8e8"/>');
@@ -214,7 +214,7 @@ function makeSVG(planets,houses,ascAbsPos,isoDatetime){
 
     // Degree label (near sign ring inner edge)
     var dlPt=xyc(RDG,da);
-    p.push('<text x="'+f(dlPt.x)+'" y="'+f(dlPt.y)+'" text-anchor="middle" dominant-baseline="central" font-size="8" fill="'+ec2+'" font-family="Helvetica,Arial,sans-serif">'+Math.floor(pl.position)+'°</text>');
+    p.push('<text x="'+f(dlPt.x)+'" y="'+f(dlPt.y)+'" text-anchor="middle" dominant-baseline="central" font-size="11" fill="'+ec2+'" font-family="Helvetica,Arial,sans-serif">'+Math.floor(pl.position)+'°</text>');
   });
 
   // ASC/DSC/MC/IC labels outside ring
