@@ -98,6 +98,19 @@ def _calc_planets_now():
         p = getattr(s, key, None)
         subject[key] = _planet_dict(p) if p is not None else None
 
+    HOUSE_ATTRS = [
+        "first_house", "second_house", "third_house", "fourth_house",
+        "fifth_house", "sixth_house", "seventh_house", "eighth_house",
+        "ninth_house", "tenth_house", "eleventh_house", "twelfth_house",
+    ]
+    houses = []
+    for i, attr in enumerate(HOUSE_ATTRS, 1):
+        h = getattr(s, attr)
+        houses.append({"house": i, "abs_pos": h.abs_pos, "sign": h.sign, "position": h.position})
+    subject["houses"] = houses
+    subject["ascendant"] = {"abs_pos": s.first_house.abs_pos, "sign": s.first_house.sign, "position": s.first_house.position}
+    subject["mc"] = {"abs_pos": s.tenth_house.abs_pos, "sign": s.tenth_house.sign, "position": s.tenth_house.position}
+
     return {"status": "OK", "subject": subject}
 
 

@@ -79,35 +79,168 @@ function f(v){return v.toFixed(2);}
 function arc(cx,cy,r1,r2,a1,a2){var p1=xy(cx,cy,r2,a1),p2=xy(cx,cy,r2,a2),p3=xy(cx,cy,r1,a2),p4=xy(cx,cy,r1,a1);var lg=(a2-a1)>180?1:0;return 'M'+f(p1.x)+','+f(p1.y)+' A'+r2+','+r2+',0,'+lg+',1,'+f(p2.x)+','+f(p2.y)+' L'+f(p3.x)+','+f(p3.y)+' A'+r1+','+r1+',0,'+lg+',0,'+f(p4.x)+','+f(p4.y)+'Z';}
 function sang(abs){return(abs+180)%360;}
 function spread(items,gap){if(items.length<=1)return items.map(function(i){return{key:i.key,angle:i.angle,da:i.angle};});var arr=items.map(function(i){return{key:i.key,angle:i.angle,da:i.angle};});for(var it=0;it<500;it++){arr.sort(function(a,b){return a.da-b.da;});var mv=false;for(var i=0;i<arr.length;i++){var j=(i+1)%arr.length;var g=arr[j].da-arr[i].da;if(j===0)g+=360;if(g<gap){var push=(gap-g)/2+0.05;arr[i].da=((arr[i].da-push)+360)%360;arr[j].da=(arr[j].da+push)%360;mv=true;}}if(!mv)break;}return arr;}
-function makeSVG(planets){
-  var cx=180,cy=180,RI=58,RP1=62,RP2=112,RPM=87,RS1=115,RS2=173,RSM=144;
+function makeSVG(planets,houses,ascAbsPos,isoDatetime){
+  var cx=280,cy=280;
+  var RO=240,RS=196,RH=108;
+  var RSM=218,RPL=166,RDG=190,RHN=148,RASP=107,RLBL=252;
+
+  function sa(p){return((540-p+ascAbsPos)%360+360)%360;}
+  function xyc(r,a){var rad=a*Math.PI/180;return{x:cx+r*Math.cos(rad),y:cy+r*Math.sin(rad)};}
+
+  function arcCCW(r1,r2,sa1,sa2){
+    var span=((sa1-sa2)+360)%360,lg=span>180?1:0;
+    var A=xyc(r2,sa1),B=xyc(r2,sa2),C=xyc(r1,sa2),D=xyc(r1,sa1);
+    return 'M'+f(A.x)+','+f(A.y)+' A'+r2+','+r2+' 0 '+lg+' 0 '+f(B.x)+','+f(B.y)+
+           ' L'+f(C.x)+','+f(C.y)+' A'+r1+','+r1+' 0 '+lg+' 1 '+f(D.x)+','+f(D.y)+'Z';
+  }
+
+  var ASPT=[
+    {deg:0,  orb:8,color:'#8B7355',dash:''},
+    {deg:180,orb:8,color:'#cc3333',dash:'6,4'},
+    {deg:120,orb:7,color:'#3366aa',dash:''},
+    {deg:90, orb:7,color:'#993333',dash:'5,4'},
+    {deg:60, orb:5,color:'#449988',dash:'3,3'},
+  ];
+
   var p=[];
-  p.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="500" height="500">');
-  p.push('<circle cx="180" cy="180" r="176" fill="#19092a"/>');
-  SD.forEach(function(sg,i){p.push('<path d="'+arc(cx,cy,RS1,RS2,i*30+180,(i+1)*30+180)+'" fill="'+EC[sg.e]+'" stroke="#4f3851" stroke-width="1.2"/>');});
-  SD.forEach(function(sg,i){var mid=i*30+15+180;var pt=xy(cx,cy,RSM,mid);p.push('<text x="'+f(pt.x)+'" y="'+f(pt.y)+'" text-anchor="middle" dominant-baseline="central" font-size="16" font-family="Helvetica,Arial,sans-serif" fill="'+ET[sg.e]+'">'+sg.s+'</text>');});
-  p.push('<circle cx="180" cy="180" r="'+RS2+'" fill="none" stroke="#7a4888" stroke-width="1"/>');
-  p.push('<circle cx="180" cy="180" r="'+RS1+'" fill="none" stroke="#7a4888" stroke-width="1"/>');
-  p.push('<circle cx="180" cy="180" r="'+RP2+'" fill="#19092a"/>');
-  p.push('<circle cx="180" cy="180" r="'+RP2+'" fill="none" stroke="#7a4888" stroke-width="0.7"/>');
-  p.push('<circle cx="180" cy="180" r="'+RP1+'" fill="none" stroke="#7a4888" stroke-width="0.7"/>');
-  p.push('<circle cx="180" cy="180" r="'+RI+'" fill="#2c1640"/>');
-  p.push('<circle cx="180" cy="180" r="'+RI+'" fill="none" stroke="#7a4888" stroke-width="0.9"/>');
-  p.push('<text x="180" y="180" text-anchor="middle" dominant-baseline="central" font-size="22" fill="#6a4080" font-family="Helvetica,Arial,sans-serif">✦</text>');
-  var angles=planets.map(function(pl){return{key:pl.k,angle:sang(pl.abs_pos)};});
-  var sp=spread(angles,20);var dm={};sp.forEach(function(s){dm[s.key]=s.da;});
-  planets.forEach(function(pl){
-    var ta=sang(pl.abs_pos),da=dm[pl.k];
-    var diff=Math.abs(((da-ta+540)%360)-180);
-    if(diff>2.5){var l1=xy(cx,cy,RP1+5,ta),l2=xy(cx,cy,RPM-12,da);p.push('<line x1="'+f(l1.x)+'" y1="'+f(l1.y)+'" x2="'+f(l2.x)+'" y2="'+f(l2.y)+'" stroke="#8050a0" stroke-width="0.8" opacity="0.55"/>');}
-    var dot=xy(cx,cy,RP1+6,ta);
-    p.push('<circle cx="'+f(dot.x)+'" cy="'+f(dot.y)+'" r="2.5" fill="'+(pl.retrograde?'#ff4d4d':'#a870c8')+'"/>');
-    var sp2=xy(cx,cy,RPM,da);
-    var sg2=SM[pl.sign];if(!sg2){for(var kk in SM){if(SM[kk].n.toLowerCase()===pl.sign.toLowerCase()){sg2=SM[kk];break;}}}
-    var ec2=sg2?EC[sg2.e]:'#e0d0e8';
-    p.push('<circle cx="'+f(sp2.x)+'" cy="'+f(sp2.y)+'" r="11" fill="#19092a" opacity="0.9"/>');
-    p.push('<g transform="translate('+f(sp2.x)+','+f(sp2.y)+') scale(0.18) translate(-50,-50)" fill="'+ec2+'">'+PP[pl.k]+'</g>');
+  p.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 560" width="500" height="500">');
+
+  // Background
+  p.push('<circle cx="280" cy="280" r="250" fill="#fce8e8"/>');
+
+  // Dark outer ring
+  p.push('<circle cx="280" cy="280" r="'+RO+'" fill="#4f3851"/>');
+
+  // Sage house ring
+  p.push('<circle cx="280" cy="280" r="'+RS+'" fill="#c8d4bc"/>');
+
+  // Alternating house shading
+  for(var i=0;i<12;i++){
+    if(i%2===1){
+      var a1=sa(houses[i].abs_pos),a2=sa(houses[(i+1)%12].abs_pos);
+      p.push('<path d="'+arcCCW(RH,RS,a1,a2)+'" fill="#b8c6aa" opacity="0.65"/>');
+    }
+  }
+
+  // Zodiac sign symbols in dark ring
+  SD.forEach(function(sg,i){
+    var mid=sa(i*30+15),pt=xyc(RSM,mid);
+    p.push('<text x="'+f(pt.x)+'" y="'+f(pt.y)+'" text-anchor="middle" dominant-baseline="central" font-size="16" fill="white" opacity="0.92" font-family="Helvetica,Arial,sans-serif">'+sg.s+'</text>');
   });
+
+  // Sign boundary ticks in dark ring
+  for(var i=0;i<12;i++){
+    var a=sa(i*30),t1=xyc(RS,a),t2=xyc(RO,a);
+    p.push('<line x1="'+f(t1.x)+'" y1="'+f(t1.y)+'" x2="'+f(t2.x)+'" y2="'+f(t2.y)+'" stroke="#3a2840" stroke-width="0.8"/>');
+  }
+
+  // House cusp lines
+  for(var i=0;i<12;i++){
+    var isMain=(i===0||i===3||i===6||i===9);
+    var hca=sa(houses[i].abs_pos),hc1=xyc(RH,hca),hc2=xyc(RS,hca);
+    p.push('<line x1="'+f(hc1.x)+'" y1="'+f(hc1.y)+'" x2="'+f(hc2.x)+'" y2="'+f(hc2.y)+
+           '" stroke="#4f3851" stroke-width="'+(isMain?'1.3':'0.7')+'" opacity="'+(isMain?'0.7':'0.4')+
+           '"'+(isMain?'':' stroke-dasharray="3,3"')+'/>');
+  }
+
+  // ASC/DSC axis (full line through chart)
+  var ascA=sa(ascAbsPos),dscA=sa((ascAbsPos+180)%360);
+  var aE=xyc(RO,ascA),dE=xyc(RO,dscA);
+  p.push('<line x1="'+f(aE.x)+'" y1="'+f(aE.y)+'" x2="'+f(dE.x)+'" y2="'+f(dE.y)+'" stroke="#4f3851" stroke-width="1.5" opacity="0.8"/>');
+
+  // MC/IC axis
+  var mcAbsPos=houses[9].abs_pos,icAbsPos=(mcAbsPos+180)%360;
+  var mcA=sa(mcAbsPos),icA=sa(icAbsPos);
+  var mE=xyc(RO,mcA),iE=xyc(RO,icA);
+  p.push('<line x1="'+f(mE.x)+'" y1="'+f(mE.y)+'" x2="'+f(iE.x)+'" y2="'+f(iE.y)+'" stroke="#4f3851" stroke-width="1.5" opacity="0.8"/>');
+
+  // Inner white circle
+  p.push('<circle cx="280" cy="280" r="'+RH+'" fill="white"/>');
+
+  // Ring borders
+  p.push('<circle cx="280" cy="280" r="'+RO+'" fill="none" stroke="#3a2840" stroke-width="1.5"/>');
+  p.push('<circle cx="280" cy="280" r="'+RS+'" fill="none" stroke="#6a5078" stroke-width="1"/>');
+  p.push('<circle cx="280" cy="280" r="'+RH+'" fill="none" stroke="#6a5078" stroke-width="0.8"/>');
+
+  // Aspect lines (inside inner circle)
+  for(var i=0;i<planets.length;i++){
+    for(var j=i+1;j<planets.length;j++){
+      var dif=Math.abs(planets[i].abs_pos-planets[j].abs_pos);
+      if(dif>180)dif=360-dif;
+      for(var k=0;k<ASPT.length;k++){
+        var at=ASPT[k];
+        if(Math.abs(dif-at.deg)<=at.orb){
+          var aa1=sa(planets[i].abs_pos),aa2=sa(planets[j].abs_pos);
+          var pt1=xyc(RASP,aa1),pt2=xyc(RASP,aa2);
+          p.push('<line x1="'+f(pt1.x)+'" y1="'+f(pt1.y)+'" x2="'+f(pt2.x)+'" y2="'+f(pt2.y)+
+                 '" stroke="'+at.color+'" stroke-width="0.9" opacity="0.6"'+(at.dash?' stroke-dasharray="'+at.dash+'"':'')+'/>' );
+          break;
+        }
+      }
+    }
+  }
+
+  // House numbers
+  for(var i=0;i<12;i++){
+    var ha1=sa(houses[i].abs_pos),ha2=sa(houses[(i+1)%12].abs_pos);
+    var hspan=((ha1-ha2)+360)%360,hmid=(ha1-hspan/2+360)%360;
+    var hn=xyc(RHN,hmid);
+    p.push('<text x="'+f(hn.x)+'" y="'+f(hn.y)+'" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#4f3851" opacity="0.5" font-family="Helvetica,Arial,sans-serif">'+(i+1)+'</text>');
+  }
+
+  // Planet icons with spread
+  var angles=planets.map(function(pl){return{key:pl.k,angle:sa(pl.abs_pos)};});
+  var sp=spread(angles,20);var dm={};sp.forEach(function(s){dm[s.key]=s.da;});
+
+  planets.forEach(function(pl){
+    var ta=sa(pl.abs_pos),da=dm[pl.k];
+    var diff=Math.abs(((da-ta+540)%360)-180);
+
+    // Tick at true position on house ring outer edge
+    var tk1=xyc(RS+1,ta),tk2=xyc(RS-7,ta);
+    p.push('<line x1="'+f(tk1.x)+'" y1="'+f(tk1.y)+'" x2="'+f(tk2.x)+'" y2="'+f(tk2.y)+'" stroke="#4f3851" stroke-width="1.2" opacity="0.7"/>');
+
+    // Retrograde dot at tick
+    if(pl.retrograde){var rd=xyc(RS-11,ta);p.push('<circle cx="'+f(rd.x)+'" cy="'+f(rd.y)+'" r="2" fill="#cc2222"/>');}
+
+    // Leader line if displaced
+    if(diff>3){var l1=xyc(RS-8,ta),l2=xyc(RPL+14,da);p.push('<line x1="'+f(l1.x)+'" y1="'+f(l1.y)+'" x2="'+f(l2.x)+'" y2="'+f(l2.y)+'" stroke="#4f3851" stroke-width="0.5" opacity="0.3"/>');}
+
+    // Element color
+    var sg2=SM[pl.sign];
+    if(!sg2){for(var kk in SM){if(SM[kk].n.toLowerCase()===pl.sign.toLowerCase()){sg2=SM[kk];break;}}}
+    var ec2=sg2?EC[sg2.e]:'#4f3851';
+
+    // Planet icon
+    var sp2=xyc(RPL,da);
+    p.push('<circle cx="'+f(sp2.x)+'" cy="'+f(sp2.y)+'" r="13" fill="white" opacity="0.85"/>');
+    p.push('<g transform="translate('+f(sp2.x)+','+f(sp2.y)+') scale(0.22) translate(-50,-50)" fill="'+ec2+'">'+PP[pl.k]+'</g>');
+
+    // Degree label (near sign ring inner edge)
+    var dlPt=xyc(RDG,da);
+    p.push('<text x="'+f(dlPt.x)+'" y="'+f(dlPt.y)+'" text-anchor="middle" dominant-baseline="central" font-size="8" fill="'+ec2+'" font-family="Helvetica,Arial,sans-serif">'+Math.floor(pl.position)+'°</text>');
+  });
+
+  // ASC/DSC/MC/IC labels outside ring
+  function axLbl(angle,txt,anchor,baseline){
+    var pt=xyc(RLBL,angle);
+    p.push('<text x="'+f(pt.x)+'" y="'+f(pt.y)+'" text-anchor="'+anchor+'" dominant-baseline="'+baseline+'" font-size="10" font-weight="700" fill="#4f3851" font-family="Helvetica,Arial,sans-serif">'+txt+'</text>');
+  }
+  axLbl(ascA,'ASC','end','central');
+  axLbl(dscA,'DSC','start','central');
+  axLbl(mcA,'MC','middle','auto');
+  axLbl(icA,'IC','middle','hanging');
+
+  // Inner circle text
+  var dt2=new Date(isoDatetime);
+  var mo=dt2.getUTCMonth()+1,dd=dt2.getUTCDate(),yy=dt2.getUTCFullYear();
+  var hh=dt2.getUTCHours(),mm=dt2.getUTCMinutes();
+  var dStr=yy+'-'+(mo<10?'0'+mo:mo)+'-'+(dd<10?'0'+dd:dd);
+  var tStr=(hh<10?'0'+hh:hh)+':'+(mm<10?'0'+mm:mm)+' UTC';
+  p.push('<text x="280" y="272" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="700" fill="#4f3851" font-family="Helvetica,Arial,sans-serif">Cielo Actual</text>');
+  p.push('<text x="280" y="287" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a5888" font-family="Helvetica,Arial,sans-serif">'+dStr+'</text>');
+  p.push('<text x="280" y="300" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a5888" font-family="Helvetica,Arial,sans-serif">'+tStr+'</text>');
+
   p.push('</svg>');
   return p.join('');
 }
@@ -130,9 +263,12 @@ fetch(API)
   .then(function(data){
     var subj=data.subject;
     var planets=PL.map(function(p){var pd=subj[p.k];return{k:p.k,n:p.n,s:p.s,sign:pd.sign,position:pd.position,abs_pos:pd.abs_pos,retrograde:pd.retrograde};});
+    var houses=subj.houses||[];
+    var ascAbsPos=subj.ascendant?subj.ascendant.abs_pos:(houses.length?houses[0].abs_pos:0);
+    var iso=subj.iso_formatted_utc_datetime;
     var tableCol='<div style="flex:1;min-width:260px;display:flex;flex-direction:column">'+makeTable(planets)+'<div style="padding-top:14px;margin-top:4px;border-top:1px solid rgba(0,0,0,0.08);text-align:right"><a href="https://astrologiasi.com/widget" style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#7a4888;text-decoration:none;letter-spacing:0.3px">Ver carta del cielo &rarr;</a></div></div>';
-    document.getElementById('aw-body').innerHTML='<div id="aw-row"><div id="aw-wheel">'+makeSVG(planets)+'</div>'+tableCol+'</div>';
-    document.getElementById('aw-ts').textContent=fmtTS(subj.iso_formatted_utc_datetime);
+    document.getElementById('aw-body').innerHTML='<div id="aw-row"><div id="aw-wheel">'+makeSVG(planets,houses,ascAbsPos,iso)+'</div>'+tableCol+'</div>';
+    document.getElementById('aw-ts').textContent=fmtTS(iso);
   })
   .catch(function(e){document.getElementById('aw-body').innerHTML='<div style="color:#cc3333;font-size:13px;text-align:center;padding:50px 20px;font-family:Helvetica,Arial,sans-serif">No se pudo conectar con el servidor.<br><span style="color:#9a7898;font-size:11px">'+e.message+'</span></div>';});
 })();
