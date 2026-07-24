@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from kerykeion import AstrologicalSubject
+from kerykeion import AstrologicalSubject, NatalAspects
 from timezonefinder import TimezoneFinder
 
 app = FastAPI()
@@ -160,16 +160,15 @@ def natal(body: NatalBody):
         planets_list.append(chiron)
 
     aspects = []
-    if hasattr(s, "aspects_list"):
-        for asp in s.aspects_list:
-            aspects.append({
-                "p1": asp.p1_name,
-                "p2": asp.p2_name,
-                "aspect": asp.aspect,
-                "orbit": asp.orbit,
-                "aspect_degrees": asp.aspect_degrees,
-                "diff": asp.diff,
-            })
+    for asp in NatalAspects(s).relevant_aspects:
+        aspects.append({
+            "p1": asp["p1_name"],
+            "p2": asp["p2_name"],
+            "aspect": asp["aspect"],
+            "orbit": asp["orbit"],
+            "aspect_degrees": asp["aspect_degrees"],
+            "diff": asp["diff"],
+        })
 
     return {
         "name": body.name,
